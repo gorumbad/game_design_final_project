@@ -3,7 +3,7 @@ import arcade
 
 WIDTH = 800
 HEIGHT = 600
-TITLE = "SPACE SHOOTER"
+TITLE = "SPACE SHOOTOUT"
 
 PLAYER_IMAGE = ":resources:images/space_shooter/playerShip1_orange.png"
 ENEMY_IMAGE = ":resources:images/space_shooter/playerShip2_orange.png"
@@ -106,7 +106,7 @@ class Menu(arcade.View):
         self.state = MENU
         self.background_color = arcade.color.BLACK
         self.selected = 0
-        self.title_text = arcade.Text("SPACE SHOOTER", WIDTH / 2, 430,
+        self.title_text = arcade.Text("SPACE SHOOTOUT", WIDTH / 2, 430,
                                       arcade.color.SKY_BLUE, 54, anchor_x="center",
                                       bold=True)
         self.best_text = arcade.Text("", WIDTH / 2, 80, arcade.color.GOLD, 18,
@@ -214,7 +214,6 @@ class Game(arcade.View):
         sheet = arcade.load_spritesheet(":resources"
                                         ":images/spritesheets/explosion.png")
         self.explosion_textures = sheet.get_texture_grid(size=(256, 256), columns=16, count=60)
-        print("Explosion frames:", len(self.explosion_textures))
         self.explosion_list = arcade.SpriteList()
         self.explosion = None
         self.explosion_timer = 0
