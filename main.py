@@ -1,10 +1,97 @@
 import arcade
+import random
 
 WIDTH = 800
 HEIGHT = 600
 TITLE = "SPACE SHOOTER"
 
+PLAYER_IMAGE = ":resources:images/space_shooter/playerShip1_orange.png"
+ENEMY_IMAGE = ":resources:images/space_shooter/playerShip2_orange.png"
+BULLET_IMAGE = "resources:images/space_shooter/laserBlue1.png"
 MENU_OPTIONS = ["Play", "How to Play", "Quit"]
+
+ENEMY_SPAWN_SECONDS = 1.5
+
+class HUD:
+
+    def __init__(self):
+        self.score_text = arcade.Text("Score = 0", 20, HEIGHT - 40, arcade.color.WHITE, 20)
+        self.wave_text = arcade.Text("Wave: 1", WIDTH / 2, HEIGHT - 40, arcade.color.WHITE, 20, anchor_x="center")
+        self.best_text = arcade.Text("Best: 0", WIDTH - 20, HEIGHT - 40, arcade.color.GOLD, 20, anchor_x="center")
+        self.lives = 3
+
+    def update(self, score, best, wave, lives):
+        self.score_text.text = f"Score: {score}"
+        self.wave_text.text = f"Wave: {wave}"
+        self.best_text.text = f"Best: {best}"
+        self.lives = lives
+
+    def draw(self):
+        self.score_text.draw()
+        self.wave_text.draw()
+        self.best_text.draw()
+        self.draw_lives()
+
+    def draw_lives(self):
+        for i in range(self.lives):
+            x = WIDTH -35 - i * 30
+            y = 20
+            arcade.draw_triangle_filled(x, y, x - 12, y - 10, x + 12, y - 10, arcade.color.SKY_BLUE)
+
+class Bullet:
+
+    def __init__(self, x, y):
+        super().__init__(BULLET_IMAGE, scale = 0.8)
+        self.center_x = x
+        self.center_y = y
+        self.change_y = 5
+
+    def update(self, delta_time=1 / 60):
+        super().update()
+        if self.top > HEIGHT:
+            self.remove_from_sprite_lists()
+
+class Player:
+
+    def __init__(self):
+        super().__init__(PLAYER_IMAGE, scale=0.5)
+        self.center_x = WIDTH / 2
+        self.center_y = 60
+        self.speed = 5
+        self.shot_timer = 0.0
+
+    def recharge(self, delta_time):
+        self.shot_timer += delta_time
+
+    def shoot(self):
+        if self.shot_timer < 0.25:
+            return None
+        self.shot_timer = 0.0
+        return Bullet(self.center_x, self.top)
+
+    def update(self, delta_time=1 / 60):
+        super().update()
+        if self.left < 0:
+            self.left = 0
+        if self.right > WIDTH:
+            self.right = WIDTH
+
+class Enemy:
+
+    def __init__(self, target):
+        super().__init__(ENEMY_IMAGE, scale=0.8)
+        self.target = target
+        self.speed = random.unifrom(1.5, 3.0)
+        self.center_x = random.randint(0, HEIGHT)
+        self.bottom = HEIGHT + 20
+        self.change_y = -self.speed
+
+    def update(self, delta_time=1 /60):
+        self.change_x = (self.target.center_x - self.center_x) * 0.02
+        self.change_y = -self.speed
+        super().update()
+        if self.bottom < 0:
+            self.remove_from_sprite_lists()
 
 
 class MenuView(arcade.View):
